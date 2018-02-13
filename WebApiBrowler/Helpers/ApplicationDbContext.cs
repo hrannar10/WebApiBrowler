@@ -12,5 +12,6 @@ namespace WebApiBrowler.Helpers
         }
 
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<Company> Companies { get; set; }
     }
 }
