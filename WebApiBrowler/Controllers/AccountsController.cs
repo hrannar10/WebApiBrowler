@@ -1,14 +1,16 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApiBrowler.Dtos;
 using WebApiBrowler.Entities;
 using WebApiBrowler.Helpers;
 
 namespace WebApiBrowler.Controllers
 {
-    [Route("api/[controller]")]
+    [Produces("application/json")]
     public class AccountsController : Controller
     {
         private readonly ApplicationDbContext _appDbContext;
@@ -22,8 +24,15 @@ namespace WebApiBrowler.Controllers
             _appDbContext = appDbContext;
         }
 
-        // POST api/accounts
+        /// <summary>
+        /// Create new user account.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
+        [Route("[controller]/")]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(string))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Post([FromBody]RegistrationDto model)
         {
             if (!ModelState.IsValid)
