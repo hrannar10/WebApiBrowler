@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using WebApiBrowler.Models.Entities;
+using WebApiBrowler.Entities;
 
 namespace WebApiBrowler.Helpers
 {

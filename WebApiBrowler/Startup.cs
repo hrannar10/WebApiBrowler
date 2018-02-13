@@ -17,10 +17,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 using WebApiBrowler.Auth;
+using WebApiBrowler.Entities;
 using WebApiBrowler.Extensions;
 using WebApiBrowler.Helpers;
 using WebApiBrowler.Models;
-using WebApiBrowler.Models.Entities;
 
 namespace WebApiBrowler
 {
@@ -85,10 +85,10 @@ namespace WebApiBrowler
 
             var tokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = true,
+                ValidateIssuer = false,
                 ValidIssuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)],
 
-                ValidateAudience = true,
+                ValidateAudience = false,
                 ValidAudience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)],
 
                 ValidateIssuerSigningKey = true,
@@ -106,16 +106,17 @@ namespace WebApiBrowler
 
             }).AddJwtBearer(configureOptions =>
             {
+                configureOptions.RequireHttpsMetadata = false;
                 configureOptions.ClaimsIssuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
                 configureOptions.TokenValidationParameters = tokenValidationParameters;
                 configureOptions.SaveToken = true;
             });
 
-            // api user claim policy
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("ApiUser", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
-            });
+            //// api user claim policy
+            //services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy("ApiUser", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
+            //});
 
             // add identity
             var builder = services.AddIdentityCore<AppUser>(o =>
@@ -160,9 +161,14 @@ namespace WebApiBrowler
                             });
                 });
 
+            // global cors policy
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+
             app.UseAuthentication();
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();

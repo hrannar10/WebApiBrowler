@@ -7,9 +7,9 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using WebApiBrowler.Auth;
 using WebApiBrowler.Dtos;
+using WebApiBrowler.Entities;
 using WebApiBrowler.Helpers;
 using WebApiBrowler.Models;
-using WebApiBrowler.Models.Entities;
 
 namespace WebApiBrowler.Controllers
 {

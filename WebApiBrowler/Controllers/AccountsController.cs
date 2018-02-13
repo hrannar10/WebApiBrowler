@@ -1,42 +1,30 @@
-﻿using System.Net;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApiBrowler.Dtos;
+using WebApiBrowler.Entities;
 using WebApiBrowler.Helpers;
-using WebApiBrowler.Models.Entities;
 
 namespace WebApiBrowler.Controllers
 {
-    [Produces("application/json")]
+    [Route("api/[controller]")]
     public class AccountsController : Controller
     {
         private readonly ApplicationDbContext _appDbContext;
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
 
-        public AccountsController(
-            ApplicationDbContext appDbContext, 
-            UserManager<AppUser> userManager, 
-            IMapper mapper)
+        public AccountsController(UserManager<AppUser> userManager, IMapper mapper, ApplicationDbContext appDbContext)
         {
-            _appDbContext = appDbContext;
             _userManager = userManager;
             _mapper = mapper;
+            _appDbContext = appDbContext;
         }
 
-        /// <summary>
-        /// Create new user account.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
+        // POST api/accounts
         [HttpPost]
-        [Route("[controller]/")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(string))]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Post([FromBody] RegistrationDto model)
+        public async Task<IActionResult> Post([FromBody]RegistrationDto model)
         {
             if (!ModelState.IsValid)
             {
@@ -47,16 +35,10 @@ namespace WebApiBrowler.Controllers
 
             var result = await _userManager.CreateAsync(userIdentity, model.Password);
 
-            if (!result.Succeeded)
-            {
-                return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
-            }
+            if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
 
-            await _appDbContext.Customers.AddAsync(new Customer
-            {
-                IdentityId = userIdentity.Id,
-                Location = model.Location
-            });
+            await _appDbContext.Customers.AddAsync(new Customer { IdentityId = userIdentity.Id, Location = model.Location });
+            await _appDbContext.SaveChangesAsync();
 
             return new OkObjectResult("Account created");
         }

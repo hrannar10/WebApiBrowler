@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using WebApiBrowler.Dtos;
-using WebApiBrowler.Models.Entities;
+using WebApiBrowler.Entities;
 
 namespace WebApiBrowler.Helpers
 {

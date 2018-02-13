@@ -1,4 +1,4 @@
-﻿namespace WebApiBrowler.Models.Entities
+﻿namespace WebApiBrowler.Entities
 {
     public class Customer
     {
