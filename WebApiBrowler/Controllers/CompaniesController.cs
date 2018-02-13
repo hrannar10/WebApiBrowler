@@ -13,7 +13,6 @@ namespace WebApiBrowler.Controllers
 {
     [Authorize]
     [Produces("application/json")]
-    [Route("[controller]")]
     public class CompaniesController : Controller
     {
         private readonly ICompanyService _companyService;
@@ -33,6 +32,7 @@ namespace WebApiBrowler.Controllers
         /// <param name="companyDto"></param>
         /// <returns></returns>
         [HttpPost]
+        [Route("[controller]")]
         [SwaggerResponse((int)HttpStatusCode.OK)]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
@@ -59,6 +59,7 @@ namespace WebApiBrowler.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Route("[controller]")]
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<CompanyDto>))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult GetAll()
@@ -73,7 +74,8 @@ namespace WebApiBrowler.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id}")]
+        [HttpGet]
+        [Route("[controller]/{id}")]
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(CompanyDto))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
@@ -90,7 +92,8 @@ namespace WebApiBrowler.Controllers
         /// <param name="id"></param>
         /// <param name="companyDto"></param>
         /// <returns></returns>
-        [HttpPut("{id}")]
+        [HttpPut]
+        [Route("[controller]/{id}")]
         [SwaggerResponse((int)HttpStatusCode.OK)]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
@@ -118,13 +121,30 @@ namespace WebApiBrowler.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("{id}")]
+        [HttpDelete]
+        [Route("[controller]/{id}")]
         [SwaggerResponse((int)HttpStatusCode.OK)]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult Delete(int id)
         {
             _companyService.Delete(id);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("[controller]/add")]
+        public IActionResult AddUser([FromBody]ModUserCompanyDto model)
+        {
+            _companyService.AddUser(model.CompanyId, model.UserId);
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route("[controller]/remove")]
+        public IActionResult RemoveUser([FromBody]ModUserCompanyDto model)
+        {
+            _companyService.RemoveUser(model.CompanyId, model.UserId);
             return Ok();
         }
     }
