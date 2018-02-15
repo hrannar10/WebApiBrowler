@@ -1,0 +1,235 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using WebApiBrowler.Dtos;
+using WebApiBrowler.Entities;
+using WebApiBrowler.Helpers;
+using WebApiBrowler.Models;
+using WebApiBrowler.Services;
+
+namespace WebApiBrowler.Controllers
+{
+    [Authorize]
+    [Produces("application/json")]
+    public class AssetsController : Controller
+    {
+        private readonly UserManager<AppUser> _userManager;
+        private readonly IAssetService _assetService;
+        private readonly IMapper _mapper;
+
+        public AssetsController(
+            UserManager<AppUser> userManager,
+            IAssetService assetService, 
+            IMapper mapper)
+        {
+            _userManager = userManager;
+            _assetService = assetService;
+            _mapper = mapper;
+        }
+
+        /// <summary>
+        /// Creates new asset.
+        /// </summary>
+        /// <param name="assetDto"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("[controller]")]
+        [SwaggerResponse((int)HttpStatusCode.OK)]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
+        [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
+        public IActionResult Create([FromBody]AssetDto assetDto)
+        {
+            // map dto to entity
+            var asset = _mapper.Map<Asset>(assetDto);
+
+            try
+            {
+                // save
+                _assetService.Create(asset);
+                return Ok();
+            }
+            catch (AppException ex)
+            {
+                // return error message if there was an exception
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get all assets.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("[controller]")]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<AssetDto>))]
+        [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
+        public IActionResult GetAll()
+        {
+            var assets = _assetService.GetAll();
+            var assetsDto = _mapper.Map<IList<AssetDto>>(assets);
+
+            foreach (var assetDto in assetsDto)
+            {
+                var user = _userManager.Users.FirstOrDefault(x => Guid.Parse(x.Id) == assetDto.Id);
+                if (user == null) continue;
+
+                assetDto.CreatedBy = user.FirstName + " " + user.LastName;
+                assetDto.ModifiedBy = user.FirstName + " " + user.LastName;
+            }
+
+            return Ok(assetsDto);
+        }
+
+        /// <summary>
+        /// Get an asset by id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("[controller]/{id}")]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(AssetDto))]
+        [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
+        public IActionResult GetById(Guid id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var asset = _assetService.GetById(id);
+            var assetDto = _mapper.Map<AssetDto>(asset);
+            return Ok(assetDto);
+        }
+
+        /// <summary>
+        /// Updates asset with given id.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("[controller]/{id}")]
+        [SwaggerResponse((int)HttpStatusCode.OK)]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
+        [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
+        public IActionResult Update(Guid id, [FromBody]AssetDto assetDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            // map dto to entity and set id
+            var asset = _mapper.Map<Asset>(assetDto);
+            asset.Id = id;
+
+            try
+            {
+                // save
+                _assetService.Update(asset);
+                return Ok();
+            }
+            catch (AppException ex)
+            {
+                // return error message if there was an exception
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Deletes a specific asset with given id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("[controller]/{id}")]
+        [SwaggerResponse((int)HttpStatusCode.OK)]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
+        [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
+        public IActionResult Delete(Guid id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _assetService.Delete(id);
+            return Ok();
+        }
+
+        /// <summary>
+        /// Get all types for asset.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("[controller]/types")]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<AssetTypeDto>))]
+        [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
+        public IActionResult GetTypes()
+        {
+            var types = _assetService.GetTypes();
+            var typesDto = _mapper.Map<IList<AssetTypeDto>>(types);
+
+            return Ok(typesDto);
+        }
+
+        // Todo: Role superuser
+        /// <summary>
+        /// Creates new asset type.
+        /// </summary>
+        /// <param name="assetTypeDto"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("[controller]/types")]
+        [SwaggerResponse((int)HttpStatusCode.OK)]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
+        [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
+        public IActionResult CreateType([FromBody] AssetTypeDto assetTypeDto)
+        {
+            // map dto to entity
+            var assetType = _mapper.Map<AssetType>(assetTypeDto);
+
+            try
+            {
+                // save
+                _assetService.CreateAssetType(assetType);
+                return Ok();
+            }
+            catch (AppException ex)
+            {
+                // return error message if there was an exception
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get list of all available status.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("[controller]/status")]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<AssetStatusDto>))]
+        [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
+        public IActionResult GetStatus()
+        {
+            var status = new List<AssetStatusDto>();
+            var count = 0;
+            foreach (var name in Enum.GetNames(typeof(Enums.AssetStatus)))
+            {
+                var assetStatus = new AssetStatusDto()
+                {
+                    Id = count,
+                    Name = name
+                };
+
+                status.Add(assetStatus);
+                count++;
+            }
+            return Ok(status);
+        }
+    }
+}

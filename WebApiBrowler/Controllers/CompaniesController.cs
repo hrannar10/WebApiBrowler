@@ -38,6 +38,11 @@ namespace WebApiBrowler.Controllers
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult Create([FromBody] CompanyDto companyDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             // map dto to entity
             var company = _mapper.Map<Company>(companyDto);
 
@@ -81,6 +86,11 @@ namespace WebApiBrowler.Controllers
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult GetById(int id)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var company = _companyService.GetById(id);
             var companyDto = _mapper.Map<CompanyDto>(company);
             return Ok(companyDto);
@@ -99,6 +109,11 @@ namespace WebApiBrowler.Controllers
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult Update(int id, [FromBody]CompanyDto companyDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             // map dto to entity and set id
             var company = _mapper.Map<Company>(companyDto);
             company.Id = id;
@@ -128,6 +143,11 @@ namespace WebApiBrowler.Controllers
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult Delete(int id)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             _companyService.Delete(id);
             return Ok();
         }
@@ -139,8 +159,16 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("[controller]/add")]
+        [SwaggerResponse((int)HttpStatusCode.OK)]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
+        [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult AddUser([FromBody]ModUserCompanyDto model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -157,8 +185,16 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpDelete]
         [Route("[controller]/remove")]
+        [SwaggerResponse((int)HttpStatusCode.OK)]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
+        [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult RemoveUser([FromBody]ModUserCompanyDto model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             _companyService.RemoveUser(model.CompanyId, model.UserId);
             return Ok();
         }

@@ -144,6 +144,11 @@ namespace WebApiBrowler.Controllers
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult Delete(Guid id)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var user = _userManager.Users.FirstOrDefault(i => Guid.Parse(i.Id) == id);
 
             _userManager.DeleteAsync(user);

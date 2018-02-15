@@ -137,6 +137,7 @@ namespace WebApiBrowler
 
             // configure DI for application services
             services.AddScoped<ICompanyService, CompanyService>();
+            services.AddScoped<IAssetService, AssetService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
