@@ -12,7 +12,7 @@ namespace WebApiBrowler.Entities
         public string Name { get; set; }
 
         [NotMapped]
-        public List<string> IdentityIds { get; set; } = new List<string>();
+        public List<Guid> IdentityIds { get; set; } = new List<Guid>();
 
         [Obsolete("Only for Persistence by EntityFramework")]
         public string IdentiyIdsJsonFromDb
@@ -26,7 +26,7 @@ namespace WebApiBrowler.Entities
                 }
                 else
                 {
-                    IdentityIds = JsonConvert.DeserializeObject<List<string>>(value);
+                    IdentityIds = JsonConvert.DeserializeObject<List<Guid>>(value);
                 }
             }
         }

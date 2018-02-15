@@ -132,14 +132,29 @@ namespace WebApiBrowler.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Add user to company.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("[controller]/add")]
         public IActionResult AddUser([FromBody]ModUserCompanyDto model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             _companyService.AddUser(model.CompanyId, model.UserId);
             return Ok();
         }
 
+        /// <summary>
+        /// Remove user from company.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpDelete]
         [Route("[controller]/remove")]
         public IActionResult RemoveUser([FromBody]ModUserCompanyDto model)

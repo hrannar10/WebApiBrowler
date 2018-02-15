@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
@@ -46,7 +47,7 @@ namespace WebApiBrowler.Controllers
 
             if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
 
-            await _appDbContext.Customers.AddAsync(new Customer { IdentityId = userIdentity.Id, Location = model.Location });
+            await _appDbContext.Customers.AddAsync(new Customer { Id = Guid.Parse(userIdentity.Id), Location = model.Location });
             await _appDbContext.SaveChangesAsync();
 
             return new OkObjectResult("Account created");

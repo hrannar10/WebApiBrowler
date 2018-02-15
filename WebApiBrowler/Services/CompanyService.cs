@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
 using WebApiBrowler.Entities;
 using WebApiBrowler.Helpers;
 
@@ -11,8 +10,8 @@ namespace WebApiBrowler.Services
         IEnumerable<Company> GetAll();
         Company GetById(int id);
         List<Customer> GetUsersById(int id);
-        void AddUser(int id, string identityId);
-        void RemoveUser(int id, string identityId);
+        void AddUser(int id, Guid identityId);
+        void RemoveUser(int id, Guid identityId);
         Company Create(Company company);
         bool Update(Company companyParm);
         bool Delete(int id);
@@ -43,16 +42,16 @@ namespace WebApiBrowler.Services
             throw new System.NotImplementedException();
         }
 
-        public void AddUser(int id, string identityId)
+        public void AddUser(int id, Guid identityId)
         {
             var company = _context.Companies.Find(id);
-            company.IdentityIds.Append(identityId);
+            company.IdentityIds.Add(identityId);
 
             _context.Companies.Update(company);
             _context.SaveChanges();
         }
 
-        public void RemoveUser(int id, string identityId)
+        public void RemoveUser(int id, Guid identityId)
         {
             var company = _context.Companies.Find(id);
             
@@ -62,12 +61,14 @@ namespace WebApiBrowler.Services
                 throw new AppException("Company not found");
             }
 
-            if (_context.Customers.Find(id) == null)
+            var user = _context.Customers.Find(identityId);
+
+            if (user == null)
             {
                 throw new AppException("Customer not found");
             }
 
-            //company.IdentityId = company.IdentityId.Where(i => i != identityId).ToArray();
+            company.IdentityIds.Remove(identityId);
 
             _context.Companies.Update(company);
             _context.SaveChanges();
