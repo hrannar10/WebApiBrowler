@@ -21,7 +21,10 @@ namespace WebApiBrowler.Controllers
         private readonly ClaimsPrincipal _caller;
         private readonly ApplicationDbContext _appDbContext;
 
-        public DashboardController(UserManager<AppUser> userManager, ApplicationDbContext appDbContext, IHttpContextAccessor httpContextAccessor)
+        public DashboardController(
+            UserManager<AppUser> userManager, 
+            ApplicationDbContext appDbContext, 
+            IHttpContextAccessor httpContextAccessor)
         {
             _caller = httpContextAccessor.HttpContext.User;
             _appDbContext = appDbContext;
