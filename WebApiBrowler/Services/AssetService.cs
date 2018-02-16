@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using WebApiBrowler.Entities;
 using WebApiBrowler.Helpers;
 using WebApiBrowler.Models;
@@ -21,10 +24,14 @@ namespace WebApiBrowler.Services
     public class AssetService : IAssetService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ClaimsPrincipal _caller;
 
-        public AssetService(ApplicationDbContext context)
+        public AssetService(
+            ApplicationDbContext context,
+            IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _caller = httpContextAccessor.HttpContext.User;
         }
 
         public IEnumerable<Asset> GetAll()
@@ -44,6 +51,14 @@ namespace WebApiBrowler.Services
             {
                 throw new AppException("Asset not found");
             }
+            var userId = Guid.Parse(_caller.Claims.Single(c => c.Type == "id").Value);
+
+            asset.Created = DateTime.Now;
+            asset.CreatedBy = userId;
+
+            asset.Modified = DateTime.Now;
+            asset.ModifiedBy = userId;
+
             _context.Assets.Add(asset);
             _context.SaveChanges();
 
@@ -59,11 +74,16 @@ namespace WebApiBrowler.Services
                 throw new AppException("Asset not found");
             }
 
+
+
             // update asset properties
+            Guid userId = Guid.Parse(_caller.Claims.Single(c => c.Type == "id").Value);
             asset.Description = assetParam.Description;
             asset.Name = assetParam.Name;
             asset.StatusId = assetParam.StatusId;
             asset.TypeId = assetParam.TypeId;
+            asset.Modified = DateTime.Now;
+            asset.ModifiedBy = userId;
 
             _context.Assets.Update(asset);
             _context.SaveChanges();

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -20,17 +22,20 @@ namespace WebApiBrowler.Controllers
     public class AssetsController : Controller
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly ClaimsPrincipal _caller;
         private readonly IAssetService _assetService;
         private readonly IMapper _mapper;
 
         public AssetsController(
             UserManager<AppUser> userManager,
             IAssetService assetService, 
-            IMapper mapper)
+            IMapper mapper,
+            IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _assetService = assetService;
             _mapper = mapper;
+            _caller = httpContextAccessor.HttpContext.User;
         }
 
         /// <summary>
@@ -72,18 +77,21 @@ namespace WebApiBrowler.Controllers
         public IActionResult GetAll()
         {
             var assets = _assetService.GetAll();
-            var assetsDto = _mapper.Map<IList<AssetDto>>(assets);
+            var assetDtos = _mapper.Map<IList<AssetDto>>(assets);
 
-            foreach (var assetDto in assetsDto)
+            foreach (var assetDto in assetDtos)
             {
-                var user = _userManager.Users.FirstOrDefault(x => Guid.Parse(x.Id) == assetDto.Id);
+                var user = _userManager.Users.FirstOrDefault(x => x.Id == assetDto.CreatedBy);
                 if (user == null) continue;
 
                 assetDto.CreatedBy = user.FirstName + " " + user.LastName;
+
+                user = _userManager.Users.FirstOrDefault(x => x.Id == assetDto.ModifiedBy);
+                if (user == null) continue;
                 assetDto.ModifiedBy = user.FirstName + " " + user.LastName;
             }
 
-            return Ok(assetsDto);
+            return Ok(assetDtos);
         }
 
         /// <summary>
