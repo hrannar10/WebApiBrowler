@@ -1,9 +1,8 @@
 ﻿using FluentValidation;
-using WebApiBrowler.Dtos.Request;
 
 namespace WebApiBrowler.Dtos.Validations
 {
-    public class RegistrationDtoValidator : AbstractValidator<RegistrationDtoRequest>
+    public class RegistrationDtoValidator : AbstractValidator<Requests.RegistrationDto>
     {
         public RegistrationDtoValidator()
         {

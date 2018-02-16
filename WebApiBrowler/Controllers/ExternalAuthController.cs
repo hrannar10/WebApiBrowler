@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using WebApiBrowler.Auth;
-using WebApiBrowler.Dtos.Request;
+using WebApiBrowler.Dtos;
 using WebApiBrowler.Entities;
 using WebApiBrowler.Helpers;
 using WebApiBrowler.Models;
@@ -35,7 +35,7 @@ namespace WebApiBrowler.Controllers
 
         // POST api/externalauth/facebook
         [HttpPost]
-        public async Task<IActionResult> Facebook([FromBody]FacebookDtoRequest model)
+        public async Task<IActionResult> Facebook([FromBody]Requests.FacebookDto model)
         {
             // 1.generate an app access token
             var appAccessTokenResponse = await Client.GetStringAsync($"https://graph.facebook.com/oauth/access_token?client_id={_fbAuthSettings.AppId}&client_secret={_fbAuthSettings.AppSecret}&grant_type=client_credentials");

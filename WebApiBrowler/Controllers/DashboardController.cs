@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApiBrowler.Dtos;
-using WebApiBrowler.Dtos.Response;
 using WebApiBrowler.Entities;
 using WebApiBrowler.Helpers;
 
@@ -37,13 +36,13 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("[controller]")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(UserInfoDtoResponse))]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(Responses.UserInfoDto))]
         public async Task<IActionResult> Home()
         {
             var userId = _caller.Claims.Single(c => c.Type == "id");
             var customer = await _appDbContext.Customers.Include(c => c.Identity).SingleAsync(c => c.Identity.Id == userId.Value);
 
-            return new OkObjectResult(new UserInfoDtoResponse
+            return new OkObjectResult(new Responses.UserInfoDto
             {
                 FirstName = customer.Identity.FirstName,
                 LastName = customer.Identity.LastName,

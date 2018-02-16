@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApiBrowler.Dtos;
-using WebApiBrowler.Dtos.Request;
 using WebApiBrowler.Entities;
 using WebApiBrowler.Helpers;
 
@@ -40,7 +39,7 @@ namespace WebApiBrowler.Controllers
         [Route("[controller]/")]
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Post([FromBody]RegistrationDtoRequest model)
+        public async Task<IActionResult> Post([FromBody]Requests.RegistrationDto model)
         {
             if (!ModelState.IsValid)
             {
@@ -79,7 +78,7 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("[controller]/{id}")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(Object))]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(Customer))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult GetById(Guid id)
         {
@@ -104,7 +103,7 @@ namespace WebApiBrowler.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK)]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-        public IActionResult Update(Guid id, [FromBody]UserDtoRequest userDto)
+        public IActionResult Update(Guid id, [FromBody]Requests.UserDto userDto)
         {
             if (!ModelState.IsValid)
             {

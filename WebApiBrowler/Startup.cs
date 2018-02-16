@@ -63,6 +63,9 @@ namespace WebApiBrowler
                 var basePath = AppContext.BaseDirectory;
                 var xmlPath = Path.Combine(basePath, "WebApiBrowler.xml");
                 c.IncludeXmlComments(xmlPath);
+
+                // UseFullTypeNameInSchemaIds replacement for .NET Core
+                c.CustomSchemaIds(x => x.FullName);
             });
 
             services.AddSingleton<IJwtFactory, JwtFactory>();

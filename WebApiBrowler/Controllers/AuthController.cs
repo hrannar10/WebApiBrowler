@@ -8,8 +8,6 @@ using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApiBrowler.Auth;
 using WebApiBrowler.Dtos;
-using WebApiBrowler.Dtos.Request;
-using WebApiBrowler.Dtos.Response;
 using WebApiBrowler.Entities;
 using WebApiBrowler.Helpers;
 using WebApiBrowler.Models;
@@ -40,9 +38,9 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("[controller]/")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(TokenDtoResponse))]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(Responses.TokenDto))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Post([FromBody]CredentialsDtoRequest credentials)
+        public async Task<IActionResult> Post([FromBody]Requests.CredentialsDto credentials)
         {
             if (!ModelState.IsValid)
             {

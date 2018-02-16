@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using WebApiBrowler.Dtos.Request;
+using WebApiBrowler.Dtos;
 using WebApiBrowler.Entities;
 
 namespace WebApiBrowler.Helpers
@@ -8,16 +8,16 @@ namespace WebApiBrowler.Helpers
     {
         public AutoMapperProfile()
         {
-            CreateMap<RegistrationDtoRequest, AppUser>().ForMember(au => au.UserName, map => map.MapFrom(vm => vm.Email));
+            CreateMap<Requests.RegistrationDto, AppUser>().ForMember(au => au.UserName, map => map.MapFrom(vm => vm.Email));
 
-            CreateMap<Company, Dtos.Response.CompanyDtoResponse>();
-            CreateMap<Dtos.Request.CompanyDtoRequest, Company>();
+            CreateMap<Company, Responses.CompanyDto>();
+            CreateMap<Requests.CompanyDto, Company>();
 
-            CreateMap<Asset, AssetDtoRequest>();
-            CreateMap<AssetDtoRequest, Asset>();
+            CreateMap<Asset, Requests.AssetTypeDto>();
+            CreateMap<Requests.AssetDto, Asset>();
 
-            CreateMap<AssetType, Dtos.Response.AssetTypeDtoResponse>();
-            CreateMap<Dtos.Request.AssetTypeDtoRequest, AssetType>();
+            CreateMap<AssetType, Responses.AssetTypeDto>();
+            CreateMap<Requests.AssetTypeDto, AssetType>();
         }
     }
 }
