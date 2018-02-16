@@ -83,7 +83,6 @@ namespace WebApiBrowler.Controllers
             {
                 var user = _userManager.Users.FirstOrDefault(x => x.Id == assetDto.CreatedBy);
                 if (user == null) continue;
-
                 assetDto.CreatedBy = user.FirstName + " " + user.LastName;
 
                 user = _userManager.Users.FirstOrDefault(x => x.Id == assetDto.ModifiedBy);
@@ -111,7 +110,25 @@ namespace WebApiBrowler.Controllers
             }
 
             var asset = _assetService.GetById(id);
+
+            if (asset == null) return NoContent();
+
             var assetDto = _mapper.Map<AssetDto>(asset);
+
+            var user = _userManager.Users.FirstOrDefault(x => x.Id == assetDto.CreatedBy);
+            if (user != null)
+            {
+                assetDto.CreatedBy = user.FirstName + " " + user.LastName;
+            }
+
+            user = _userManager.Users.FirstOrDefault(x => x.Id == assetDto.ModifiedBy);
+            if (user != null)
+            {
+                assetDto.ModifiedBy = user.FirstName + " " + user.LastName;
+
+            }
+
+
             return Ok(assetDto);
         }
 
