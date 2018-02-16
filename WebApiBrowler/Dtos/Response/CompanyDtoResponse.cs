@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace WebApiBrowler.Dtos
+namespace WebApiBrowler.Dtos.Response
 {
-    public class CompanyDto
+    public class CompanyDtoResponse
     {
         public int Id { get; set; }
         public string Name { get; set; }

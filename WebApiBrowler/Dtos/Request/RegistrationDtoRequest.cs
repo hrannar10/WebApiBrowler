@@ -1,6 +1,6 @@
-﻿namespace WebApiBrowler.Dtos
+﻿namespace WebApiBrowler.Dtos.Request
 {
-    public class RegistrationDto
+    public class RegistrationDtoRequest
     {
         public string Email { get; set; }
         public string Password { get; set; }

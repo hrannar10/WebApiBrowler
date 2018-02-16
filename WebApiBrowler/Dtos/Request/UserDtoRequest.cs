@@ -1,6 +1,6 @@
-﻿namespace WebApiBrowler.Dtos
+﻿namespace WebApiBrowler.Dtos.Request
 {
-    public class UserDto
+    public class UserDtoRequest
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

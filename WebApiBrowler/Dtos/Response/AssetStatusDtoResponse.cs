@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebApiBrowler.Dtos
+namespace WebApiBrowler.Dtos.Response
 {
-    public class AssetStatusDto
+    public class AssetStatusDtoResponse
     {
         [Key]
         public int Id { get; set; }

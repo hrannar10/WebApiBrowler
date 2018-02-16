@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApiBrowler.Dtos;
+using WebApiBrowler.Dtos.Request;
 using WebApiBrowler.Entities;
 using WebApiBrowler.Helpers;
 
@@ -39,7 +40,7 @@ namespace WebApiBrowler.Controllers
         [Route("[controller]/")]
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Post([FromBody]RegistrationDto model)
+        public async Task<IActionResult> Post([FromBody]RegistrationDtoRequest model)
         {
             if (!ModelState.IsValid)
             {
@@ -103,7 +104,7 @@ namespace WebApiBrowler.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK)]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-        public IActionResult Update(Guid id, [FromBody]UserDto userDto)
+        public IActionResult Update(Guid id, [FromBody]UserDtoRequest userDto)
         {
             if (!ModelState.IsValid)
             {

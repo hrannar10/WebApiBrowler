@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace WebApiBrowler.Dtos
+namespace WebApiBrowler.Dtos.Response
 {
-    public class AssetDto
+    public class AssetDtoResponse
     {
         [Key]
         public Guid Id { get; set; }

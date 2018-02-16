@@ -1,6 +1,6 @@
-﻿namespace WebApiBrowler.Dtos
+﻿namespace WebApiBrowler.Dtos.Response
 {
-    public class TokenDto
+    public class TokenDtoResponse
     {
         public string Id { get; set; }
         public string AuthToken { get; set; }

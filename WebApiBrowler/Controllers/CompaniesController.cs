@@ -4,7 +4,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using WebApiBrowler.Dtos;
+using WebApiBrowler.Dtos.Request;
 using WebApiBrowler.Entities;
 using WebApiBrowler.Helpers;
 using WebApiBrowler.Services;
@@ -36,7 +36,7 @@ namespace WebApiBrowler.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK)]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-        public IActionResult Create([FromBody] CompanyDto companyDto)
+        public IActionResult Create([FromBody] CompanyDtoRequest companyDto)
         {
             if (!ModelState.IsValid)
             {
@@ -65,12 +65,12 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("[controller]")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<CompanyDto>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<CompanyDtoRequest>))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult GetAll()
         {
             var companies = _companyService.GetAll();
-            var companyDtos = _mapper.Map<IList<CompanyDto>>(companies);
+            var companyDtos = _mapper.Map<IList<CompanyDtoRequest>>(companies);
             return Ok(companyDtos);
         }
 
@@ -81,7 +81,7 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("[controller]/{id}")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(CompanyDto))]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(CompanyDtoRequest))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult GetById(int id)
@@ -92,7 +92,7 @@ namespace WebApiBrowler.Controllers
             }
 
             var company = _companyService.GetById(id);
-            var companyDto = _mapper.Map<CompanyDto>(company);
+            var companyDto = _mapper.Map<CompanyDtoRequest>(company);
             return Ok(companyDto);
         }
 
@@ -107,7 +107,7 @@ namespace WebApiBrowler.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK)]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-        public IActionResult Update(int id, [FromBody]CompanyDto companyDto)
+        public IActionResult Update(int id, [FromBody]CompanyDtoRequest companyDto)
         {
             if (!ModelState.IsValid)
             {
@@ -162,7 +162,7 @@ namespace WebApiBrowler.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK)]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-        public IActionResult AddUser([FromBody]ModUserCompanyDto model)
+        public IActionResult AddUser([FromBody]ModUserCompanyDtoRequest model)
         {
             if (!ModelState.IsValid)
             {
@@ -188,7 +188,7 @@ namespace WebApiBrowler.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK)]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-        public IActionResult RemoveUser([FromBody]ModUserCompanyDto model)
+        public IActionResult RemoveUser([FromBody]ModUserCompanyDtoRequest model)
         {
             if (!ModelState.IsValid)
             {

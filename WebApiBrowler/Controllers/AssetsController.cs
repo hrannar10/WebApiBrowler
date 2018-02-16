@@ -9,11 +9,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using WebApiBrowler.Dtos;
+using WebApiBrowler.Dtos.Response;
 using WebApiBrowler.Entities;
 using WebApiBrowler.Helpers;
 using WebApiBrowler.Models;
 using WebApiBrowler.Services;
+using AssetDtoRequest = WebApiBrowler.Dtos.Request.AssetDtoRequest;
+using AssetTypeDtoResponse = WebApiBrowler.Dtos.Response.AssetTypeDtoResponse;
 
 namespace WebApiBrowler.Controllers
 {
@@ -48,7 +50,7 @@ namespace WebApiBrowler.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK)]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-        public IActionResult Create([FromBody]AssetDto assetDto)
+        public IActionResult Create([FromBody]AssetDtoRequest assetDto)
         {
             // map dto to entity
             var asset = _mapper.Map<Asset>(assetDto);
@@ -72,12 +74,12 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("[controller]")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<AssetDto>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<Dtos.Response.AssetDtoResponse>))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult GetAll()
         {
             var assets = _assetService.GetAll();
-            var assetDtos = _mapper.Map<IList<AssetDto>>(assets);
+            var assetDtos = _mapper.Map<IList<Dtos.Response.AssetDtoResponse>>(assets);
 
             foreach (var assetDto in assetDtos)
             {
@@ -100,7 +102,7 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("[controller]/{id}")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(AssetDto))]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(Dtos.Response.AssetDtoResponse))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult GetById(Guid id)
         {
@@ -113,7 +115,7 @@ namespace WebApiBrowler.Controllers
 
             if (asset == null) return NoContent();
 
-            var assetDto = _mapper.Map<AssetDto>(asset);
+            var assetDto = _mapper.Map<Dtos.Response.AssetDtoResponse>(asset);
 
             var user = _userManager.Users.FirstOrDefault(x => x.Id == assetDto.CreatedBy);
             if (user != null)
@@ -141,7 +143,7 @@ namespace WebApiBrowler.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK)]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-        public IActionResult Update(Guid id, [FromBody]AssetDto assetDto)
+        public IActionResult Update(Guid id, [FromBody]Dtos.Request.AssetDtoRequest assetDto)
         {
             if (!ModelState.IsValid)
             {
@@ -192,12 +194,12 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("[controller]/types")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<AssetTypeDto>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<AssetTypeDtoResponse>))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult GetTypes()
         {
             var types = _assetService.GetTypes();
-            var typesDto = _mapper.Map<IList<AssetTypeDto>>(types);
+            var typesDto = _mapper.Map<IList<AssetTypeDtoResponse>>(types);
 
             return Ok(typesDto);
         }
@@ -213,7 +215,7 @@ namespace WebApiBrowler.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK)]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-        public IActionResult CreateType([FromBody] AssetTypeDto assetTypeDto)
+        public IActionResult CreateType([FromBody] AssetTypeDtoResponse assetTypeDto)
         {
             // map dto to entity
             var assetType = _mapper.Map<AssetType>(assetTypeDto);
@@ -237,15 +239,15 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("[controller]/status")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<AssetStatusDto>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<AssetStatusDtoResponse>))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult GetStatus()
         {
-            var status = new List<AssetStatusDto>();
+            var status = new List<AssetStatusDtoResponse>();
             var count = 0;
             foreach (var name in Enum.GetNames(typeof(Enums.AssetStatus)))
             {
-                var assetStatus = new AssetStatusDto()
+                var assetStatus = new AssetStatusDtoResponse()
                 {
                     Id = count,
                     Name = name
