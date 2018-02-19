@@ -116,11 +116,11 @@ namespace WebApiBrowler
                 configureOptions.SaveToken = true;
             });
 
-            //// api user claim policy
-            //services.AddAuthorization(options =>
-            //{
-            //    options.AddPolicy("ApiUser", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
-            //});
+            // api user claim policy
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ApiUser", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
+            });
 
             // add identity
             var builder = services.AddIdentityCore<AppUser>(o =>

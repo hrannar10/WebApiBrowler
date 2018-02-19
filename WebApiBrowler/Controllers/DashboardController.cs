@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -15,19 +16,23 @@ using WebApiBrowler.Helpers;
 namespace WebApiBrowler.Controllers
 {
     [Produces("application/json")]
-    [Authorize]
+    [Authorize(Policy = "ApiUser")]
     public class DashboardController : Controller
     {
         private readonly ClaimsPrincipal _caller;
+        private readonly UserManager<AppUser> _userManager;
         private readonly ApplicationDbContext _appDbContext;
+
 
         public DashboardController(
             UserManager<AppUser> userManager, 
             ApplicationDbContext appDbContext, 
             IHttpContextAccessor httpContextAccessor)
         {
-            _caller = httpContextAccessor.HttpContext.User;
+
+            _userManager = userManager;
             _appDbContext = appDbContext;
+            _caller = httpContextAccessor.HttpContext.User;
         }
 
         /// <summary>
@@ -39,18 +44,20 @@ namespace WebApiBrowler.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(Responses.UserInfoDto))]
         public async Task<IActionResult> Home()
         {
-            var userId = _caller.Claims.Single(c => c.Type == "id");
-            var customer = await _appDbContext.Customers.Include(c => c.Identity).SingleAsync(c => c.Identity.Id == userId.Value);
+            var userId = _caller.Claims.Single(c => c.Type == "id").Value;
+            var user = _userManager.Users.FirstOrDefault(i => i.Id == userId);
 
-            return new OkObjectResult(new Responses.UserInfoDto
+            if (user == null)
             {
-                FirstName = customer.Identity.FirstName,
-                LastName = customer.Identity.LastName,
-                PictureUrl = customer.Identity.PictureUrl,
-                FacebookId = customer.Identity.FacebookId,
-                Location = customer.Location,
-                Locale = customer.Locale,
-                Gender = customer.Gender
+                return BadRequest("No user found, you should not exists");
+            }
+
+            return Ok(new Responses.UserInfoDto
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PictureUrl = user.PictureUrl,
+                FacebookId = user.FacebookId,
             });
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
@@ -21,7 +22,7 @@ namespace WebApiBrowler.Controllers
         private readonly IMapper _mapper;
 
         public AccountsController(
-            UserManager<AppUser> userManager, 
+            UserManager<AppUser> userManager,
             IMapper mapper, 
             ApplicationDbContext appDbContext)
         {
@@ -49,10 +50,14 @@ namespace WebApiBrowler.Controllers
             var userIdentity = _mapper.Map<AppUser>(model);
 
             var result = await _userManager.CreateAsync(userIdentity, model.Password);
-
             if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
 
-            await _appDbContext.Customers.AddAsync(new Customer { Id = Guid.Parse(userIdentity.Id), Location = model.Location });
+            var claim = new Claim(ClaimTypes.Role, "admin");
+            result = await _userManager.AddClaimAsync(userIdentity, claim);
+            if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
+
+            await _appDbContext.Users.AddAsync(new User { Id = Guid.Parse(userIdentity.Id), Location = model.Location });
+
             await _appDbContext.SaveChangesAsync();
 
             return new OkObjectResult("Account created");
@@ -64,10 +69,12 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("[controller]/")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<Customer>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<User>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest)]
         public IActionResult GetAllUsers()
         {
+            var users = _userManager.GetUsersInRoleAsync("admin");
+
             return Ok(_userManager.Users);
         }
 
@@ -78,7 +85,7 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("[controller]/{id}")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(Customer))]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(User))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult GetById(Guid id)
         {
