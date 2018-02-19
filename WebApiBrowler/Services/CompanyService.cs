@@ -9,7 +9,7 @@ namespace WebApiBrowler.Services
     {
         IEnumerable<Company> GetAll();
         Company GetById(int id);
-        List<User> GetUsersById(int id);
+        List<AppUser> GetUsersById(int id);
         void AddUser(int id, Guid identityId);
         void RemoveUser(int id, Guid identityId);
         Company Create(Company company);
@@ -37,7 +37,7 @@ namespace WebApiBrowler.Services
             return _context.Companies.Find(id);
         }
 
-        public List<User> GetUsersById(int id)
+        public List<AppUser> GetUsersById(int id)
         {
             throw new System.NotImplementedException();
         }
@@ -45,7 +45,7 @@ namespace WebApiBrowler.Services
         public void AddUser(int id, Guid identityId)
         {
             var company = _context.Companies.Find(id);
-            company.IdentityIds.Add(identityId);
+            company.UserIds.Add(identityId);
 
             _context.Companies.Update(company);
             _context.SaveChanges();
@@ -65,10 +65,10 @@ namespace WebApiBrowler.Services
 
             if (user == null)
             {
-                throw new AppException("Customer not found");
+                throw new AppException("User not found");
             }
 
-            company.IdentityIds.Remove(identityId);
+            company.UserIds.Remove(identityId);
 
             _context.Companies.Update(company);
             _context.SaveChanges();

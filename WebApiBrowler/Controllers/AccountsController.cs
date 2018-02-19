@@ -52,14 +52,10 @@ namespace WebApiBrowler.Controllers
             var result = await _userManager.CreateAsync(userIdentity, model.Password);
             if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
 
-            var claim = new Claim(ClaimTypes.Role, "admin");
-            result = await _userManager.AddClaimAsync(userIdentity, claim);
-            if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
-
-            await _appDbContext.Users.AddAsync(new User { Id = Guid.Parse(userIdentity.Id), Location = model.Location });
-
-            await _appDbContext.SaveChangesAsync();
-
+            //var claim = new Claim(ClaimTypes.Role, "admin");
+            //result = await _userManager.AddClaimAsync(userIdentity, claim);
+            //if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
+            
             return new OkObjectResult("Account created");
         }
 
@@ -69,7 +65,7 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("[controller]/")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<User>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<Responses.UserInfoDto>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest)]
         public IActionResult GetAllUsers()
         {
@@ -85,7 +81,7 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("[controller]/{id}")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(User))]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(Responses.UserInfoDto))]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
         public IActionResult GetById(Guid id)
         {

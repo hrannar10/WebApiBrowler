@@ -12,21 +12,21 @@ namespace WebApiBrowler.Entities
         public string Name { get; set; }
 
         [NotMapped]
-        public List<Guid> IdentityIds { get; set; } = new List<Guid>();
+        public List<Guid> UserIds { get; set; } = new List<Guid>();
 
         [Obsolete("Only for Persistence by EntityFramework")]
         public string IdentiyIdsJsonFromDb
         {
-            get { return IdentityIds == null || !IdentityIds.Any() ? null : JsonConvert.SerializeObject(IdentityIds); }
+            get { return UserIds == null || !UserIds.Any() ? null : JsonConvert.SerializeObject(UserIds); }
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    IdentityIds.Clear();
+                    UserIds.Clear();
                 }
                 else
                 {
-                    IdentityIds = JsonConvert.DeserializeObject<List<Guid>>(value);
+                    UserIds = JsonConvert.DeserializeObject<List<Guid>>(value);
                 }
             }
         }

@@ -2,7 +2,8 @@
 
 namespace WebApiBrowler.Entities
 {
-    public class User
+    public class Customer
+
     {
         public Guid Id { get; set; }
         public AppUser Identity { get; set; }  // navigation property

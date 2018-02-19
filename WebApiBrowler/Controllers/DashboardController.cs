@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -10,24 +8,26 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApiBrowler.Dtos;
 using WebApiBrowler.Entities;
-using WebApiBrowler.Helpers;
 
 namespace WebApiBrowler.Controllers
 {
     [Produces("application/json")]
-    [Authorize(Policy = "ApiUser")]
+    //[Authorize(Policy = "ApiUser")]
     public class DashboardController : Controller
     {
         private readonly ClaimsPrincipal _caller;
         private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<AppRole> _roleManager;
 
 
         public DashboardController(
-            UserManager<AppUser> userManager, 
+            UserManager<AppUser> userManager,
+            RoleManager<AppRole> roleManager,
             IHttpContextAccessor httpContextAccessor)
         {
 
             _userManager = userManager;
+            _roleManager = roleManager;
             _caller = httpContextAccessor.HttpContext.User;
         }
 
@@ -45,8 +45,10 @@ namespace WebApiBrowler.Controllers
 
             if (user == null)
             {
-                return BadRequest("No user found, you should not exists");
+                return BadRequest("No user found.");
             }
+
+            var roles = _roleManager.Roles;
 
             return Ok(new Responses.UserInfoDto
             {

@@ -72,7 +72,7 @@ namespace WebApiBrowler.Controllers
 
                 if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
 
-                await _appDbContext.Users.AddAsync(new User { Id = Guid.Parse(appUser.Id), Location = "", Locale = userInfo.Locale, Gender = userInfo.Gender });
+                await _appDbContext.Customers.AddAsync(new Customer { Id = Guid.Parse(appUser.Id), Location = "", Locale = userInfo.Locale, Gender = userInfo.Gender });
                 await _appDbContext.SaveChangesAsync();
             }
 
