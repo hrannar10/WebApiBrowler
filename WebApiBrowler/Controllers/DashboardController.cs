@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApiBrowler.Dtos;
 using WebApiBrowler.Entities;
@@ -21,17 +20,14 @@ namespace WebApiBrowler.Controllers
     {
         private readonly ClaimsPrincipal _caller;
         private readonly UserManager<AppUser> _userManager;
-        private readonly ApplicationDbContext _appDbContext;
 
 
         public DashboardController(
             UserManager<AppUser> userManager, 
-            ApplicationDbContext appDbContext, 
             IHttpContextAccessor httpContextAccessor)
         {
 
             _userManager = userManager;
-            _appDbContext = appDbContext;
             _caller = httpContextAccessor.HttpContext.User;
         }
 
@@ -42,7 +38,7 @@ namespace WebApiBrowler.Controllers
         [HttpGet]
         [Route("[controller]")]
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(Responses.UserInfoDto))]
-        public async Task<IActionResult> Home()
+        public IActionResult Home()
         {
             var userId = _caller.Claims.Single(c => c.Type == "id").Value;
             var user = _userManager.Users.FirstOrDefault(i => i.Id == userId);
@@ -57,7 +53,7 @@ namespace WebApiBrowler.Controllers
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 PictureUrl = user.PictureUrl,
-                FacebookId = user.FacebookId,
+                FacebookId = user.FacebookId
             });
         }
     }
