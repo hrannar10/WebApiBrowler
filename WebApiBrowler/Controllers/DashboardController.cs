@@ -49,24 +49,6 @@ namespace WebApiBrowler.Controllers
                 return BadRequest("No user found.");
             }
 
-
-            var role = new AppRole("Hamstur");
-            var bleh = _roleManager.CreateAsync(role);
-
-            role = new AppRole("Dvergur");
-            bleh = _roleManager.CreateAsync(role);
-
-
-            var appRol = _roleManager.FindByNameAsync("Hamstur");
-            var appRol2 = _roleManager.FindByNameAsync("Dvergur");
-
-            var shjee = _userManager.AddToRoleAsync(user, "Dvergur");
-
-            var shje = _userManager.AddToRoleAsync(user, "Hamstur");
-
-            var hamsterRole = _roleManager.FindByNameAsync("Hamstur");
-
-
             return Ok(new Responses.UserInfoDto
             {
                 FirstName = user.FirstName,

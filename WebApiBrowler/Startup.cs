@@ -145,10 +145,15 @@ namespace WebApiBrowler
             // configure DI for application services
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<IAssetService, AssetService>();
+            services.AddScoped<UserService.IAdmin, UserService.Admin>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(
+            IApplicationBuilder app, 
+            IHostingEnvironment env,
+            UserManager<AppUser> userManager,
+            RoleManager<AppRole> roleManager)
         {
             if (env.IsDevelopment())
             {
@@ -181,6 +186,9 @@ namespace WebApiBrowler
                 .AllowCredentials());
 
             app.UseAuthentication();
+
+            // Seed default admin user and roles
+            IdentityDataInitializer.SeedData(userManager, roleManager);
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();

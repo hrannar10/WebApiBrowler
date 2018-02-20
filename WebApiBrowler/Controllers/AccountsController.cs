@@ -5,17 +5,18 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApiBrowler.Dtos;
 using WebApiBrowler.Entities;
 using WebApiBrowler.Helpers;
-using WebApiBrowler.Models;
 using WebApiBrowler.Services;
 
 namespace WebApiBrowler.Controllers
 {
+    [Authorize]
     [Produces("application/json")]
     public class AccountsController : Controller
     {
@@ -23,17 +24,20 @@ namespace WebApiBrowler.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<AppRole> _roleManager;
         private readonly IMapper _mapper;
+        private readonly UserService.IAdmin _admin;
 
         public AccountsController(
             UserManager<AppUser> userManager,
             IMapper mapper, 
             ApplicationDbContext appDbContext, 
-            RoleManager<AppRole> roleManager)
+            RoleManager<AppRole> roleManager, 
+            UserService.IAdmin admin)
         {
             _userManager = userManager;
             _mapper = mapper;
             _appDbContext = appDbContext;
             _roleManager = roleManager;
+            _admin = admin;
         }
 
         /// <summary>
@@ -41,6 +45,7 @@ namespace WebApiBrowler.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
+        [AllowAnonymous]
         [HttpPost]
         [Route("[controller]/")]
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(string))]
@@ -79,11 +84,13 @@ namespace WebApiBrowler.Controllers
         [Route("[controller]/Admin")]
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-        public IActionResult AddAdmin([FromBody] AppUser user)
+        public async Task<IActionResult> AddAdmin(string userName)
         {
-            UserService.Admin.AddAdmin(user);
+            var user = await _userManager.FindByNameAsync(userName);
 
-            return Ok();
+            var result = await _admin.AddAdmin(user);
+
+            return Ok(result);
         }
 
         /// <summary>
