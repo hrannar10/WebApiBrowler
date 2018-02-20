@@ -1,4 +1,7 @@
-﻿namespace WebApiBrowler.Dtos
+﻿using System.Collections.Generic;
+using WebApiBrowler.Entities;
+
+namespace WebApiBrowler.Dtos
 {
     public partial class Responses
     {
@@ -11,6 +14,7 @@
             public string Location { get; set; }
             public string Locale { get; set; }
             public string Gender { get; set; }
+            public List<string> Roles { get; set; }
         }
     }
 }

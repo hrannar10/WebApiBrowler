@@ -19,14 +19,14 @@ namespace WebApiBrowler.Controllers
     {
         private readonly ApplicationDbContext _appDbContext;
         private readonly UserManager<AppUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<AppRole> _roleManager;
         private readonly IMapper _mapper;
 
         public AccountsController(
             UserManager<AppUser> userManager,
             IMapper mapper, 
             ApplicationDbContext appDbContext, 
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<AppRole> roleManager)
         {
             _userManager = userManager;
             _mapper = mapper;

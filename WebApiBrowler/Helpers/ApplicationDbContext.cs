@@ -15,5 +15,6 @@ namespace WebApiBrowler.Helpers
         public DbSet<Company> Companies { get; set; }
         public DbSet<Asset> Assets { get; set; }
         public DbSet<AssetType> AssetTypes { get; set; }
+        public DbSet<AppRole> AppRoles { get; set; }
     }
 }

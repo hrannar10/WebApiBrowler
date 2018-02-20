@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
@@ -18,12 +19,12 @@ namespace WebApiBrowler.Controllers
     {
         private readonly ClaimsPrincipal _caller;
         private readonly UserManager<AppUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<AppRole> _roleManager;
 
 
         public DashboardController(
             UserManager<AppUser> userManager,
-            RoleManager<IdentityRole> roleManager,
+            RoleManager<AppRole> roleManager,
             IHttpContextAccessor httpContextAccessor)
         {
 
@@ -48,12 +49,29 @@ namespace WebApiBrowler.Controllers
                 return BadRequest("No user found.");
             }
 
+
+            var role = new AppRole("Hamstur");
+            var bleh = _roleManager.CreateAsync(role);
+
+            role = new AppRole("Dvergur");
+            bleh = _roleManager.CreateAsync(role);
+
+
+            var appRol = _roleManager.FindByNameAsync("Hamstur");
+            var appRol2 = _roleManager.FindByNameAsync("Dvergur");
+
+            var shjee = _userManager.AddToRoleAsync(user, "Dvergur");
+
+            var shje = _userManager.AddToRoleAsync(user, "Hamstur");
+
+
             return Ok(new Responses.UserInfoDto
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 PictureUrl = user.PictureUrl,
-                FacebookId = user.FacebookId
+                FacebookId = user.FacebookId,
+                Roles = _userManager.GetRolesAsync(user).Result.ToList()
             });
         }
     }
