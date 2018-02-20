@@ -64,6 +64,8 @@ namespace WebApiBrowler.Controllers
 
             var shje = _userManager.AddToRoleAsync(user, "Hamstur");
 
+            var hamsterRole = _roleManager.FindByNameAsync("Hamstur");
+
 
             return Ok(new Responses.UserInfoDto
             {

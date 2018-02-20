@@ -11,6 +11,8 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApiBrowler.Dtos;
 using WebApiBrowler.Entities;
 using WebApiBrowler.Helpers;
+using WebApiBrowler.Models;
+using WebApiBrowler.Services;
 
 namespace WebApiBrowler.Controllers
 {
@@ -55,11 +57,33 @@ namespace WebApiBrowler.Controllers
             var result = await _userManager.CreateAsync(userIdentity, model.Password);
             if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
 
-            //var claim = new Claim(ClaimTypes.Role, "admin");
-            //result = await _userManager.AddClaimAsync(userIdentity, claim);
-            //if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
+            var userRole = await _roleManager.FindByNameAsync(Constants.Roles.User);
+            if (userRole == null)
+            {
+                userRole = new AppRole(Constants.Roles.User);
+                await _roleManager.CreateAsync(userRole);
+
+                await _roleManager.AddClaimAsync(userRole,
+                    new Claim(Constants.CustomClaimTypes.Permission, Constants.Permission.View));
+            }
+
+            if (!await _userManager.IsInRoleAsync(userIdentity, userRole.Name))
+            {
+                await _userManager.AddToRoleAsync(userIdentity, userRole.Name);
+            }
             
             return new OkObjectResult("Account created");
+        }
+
+        [HttpPost]
+        [Route("[controller]/Admin")]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(string))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest)]
+        public IActionResult AddAdmin([FromBody] AppUser user)
+        {
+            UserService.Admin.AddAdmin(user);
+
+            return Ok();
         }
 
         /// <summary>
