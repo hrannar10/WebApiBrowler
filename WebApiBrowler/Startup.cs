@@ -132,10 +132,12 @@ namespace WebApiBrowler
                 o.Password.RequireNonAlphanumeric = false;
                 o.Password.RequiredLength = 6;
             });
-            builder.AddRoles<AppRole>();
-            builder = new IdentityBuilder(builder.UserType, typeof(AppRole), builder.Services);
-            builder.AddEntityFrameworkStores<ApplicationDbContext>();
-            builder.AddDefaultTokenProviders();
+            builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
+            builder
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            builder.AddRoleValidator<RoleValidator<IdentityRole>>();
+            builder.AddRoleManager<RoleManager<IdentityRole>>();
 
             services.AddAutoMapper();
             services.AddMvc().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());

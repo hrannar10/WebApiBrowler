@@ -12,17 +12,18 @@ using WebApiBrowler.Entities;
 namespace WebApiBrowler.Controllers
 {
     [Produces("application/json")]
-    //[Authorize(Policy = "ApiUser")]
+    [Route("[controller]/[action]")]
+    [Authorize]
     public class DashboardController : Controller
     {
         private readonly ClaimsPrincipal _caller;
         private readonly UserManager<AppUser> _userManager;
-        private readonly RoleManager<AppRole> _roleManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
 
         public DashboardController(
             UserManager<AppUser> userManager,
-            RoleManager<AppRole> roleManager,
+            RoleManager<IdentityRole> roleManager,
             IHttpContextAccessor httpContextAccessor)
         {
 
@@ -36,7 +37,6 @@ namespace WebApiBrowler.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("[controller]")]
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(Responses.UserInfoDto))]
         public IActionResult Home()
         {
@@ -47,8 +47,6 @@ namespace WebApiBrowler.Controllers
             {
                 return BadRequest("No user found.");
             }
-
-            var roles = _roleManager.Roles;
 
             return Ok(new Responses.UserInfoDto
             {
