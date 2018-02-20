@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 using WebApiBrowler.Entities;
 using WebApiBrowler.Helpers;
 
@@ -65,6 +66,14 @@ namespace WebApiBrowler.Services
                     Description = "Perform normal operations."
                 };
                 var roleResult = roleManager.CreateAsync(role).Result;
+                var res = roleManager.AddClaimAsync(role,
+                    new Claim(Constants.CustomClaimTypes.Permission, Constants.Permission.Delete)).Result;
+                res = roleManager.AddClaimAsync(role,
+                    new Claim(Constants.CustomClaimTypes.Permission, Constants.Permission.Update)).Result;
+                res = roleManager.AddClaimAsync(role,
+                    new Claim(Constants.CustomClaimTypes.Permission, Constants.Permission.Create)).Result;
+                res = roleManager.AddClaimAsync(role,
+                    new Claim(Constants.CustomClaimTypes.Permission, Constants.Permission.View)).Result;
             }
 
             if (!roleManager.RoleExistsAsync(Constants.Roles.Voice).Result)
@@ -85,6 +94,8 @@ namespace WebApiBrowler.Services
                     Description = "Perform all the operations."
                 };
                 var roleResult = roleManager.CreateAsync(role).Result;
+                var res = roleManager.AddClaimAsync(role,
+                    new Claim(Constants.CustomClaimTypes.Permission, Constants.Permission.View)).Result;
             }
         }
     }

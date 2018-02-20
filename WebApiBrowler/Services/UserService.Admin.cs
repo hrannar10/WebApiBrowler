@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,11 +15,11 @@ namespace WebApiBrowler.Services
         public interface IAdmin
         {
             Task<bool> AddAdmin(AppUser user);
-            void RemoveAdmin(AppUser user);
-            void AddVoice(AppUser user);
-            void RemoveVoice(AppUser user);
-            void ViewAdmins();
-            void ViewVoices();
+            Task<bool> RemoveAdmin(AppUser user);
+            Task<bool> AddVoice(AppUser user);
+            Task<bool> RemoveVoice(AppUser user);
+            Task<ICollection<AppUser>> ViewAdmins();
+            Task<ICollection<AppUser>> ViewVoices();
 
         }
 
@@ -33,48 +35,88 @@ namespace WebApiBrowler.Services
                 _roleManager = roleManager;
             }
 
-            // Todo: Add to admin role
+            /// <summary>
+            /// Adds user to admin role.
+            /// </summary>
+            /// <param name="user"></param>
+            /// <returns></returns>
             public async Task<bool> AddAdmin(AppUser user)
             {
-                var adminRole = await CreateRoleIfNotExists(Constants.Roles.Admin);
+                var role = await CreateRoleIfNotExists(Constants.Roles.Admin);
                 var result = new IdentityResult();
 
-                if (!await _userManager.IsInRoleAsync(user, adminRole.Name))
+                if (!await _userManager.IsInRoleAsync(user, role.Name))
                 {
-                    result = await _userManager.AddToRoleAsync(user, adminRole.Name);
+                    result = await _userManager.AddToRoleAsync(user, role.Name);
                 }
                 return result.Succeeded;
             }
 
-            // Todo: Remove from admin role
+            /// <summary>
+            /// Removes user from admin role.
+            /// </summary>
+            /// <param name="user"></param>
+            /// <returns></returns>
             //[Authorize(Policy = "SuperAdmin")]
-            public void RemoveAdmin(AppUser user)
+            public async Task<bool> RemoveAdmin(AppUser user)
             {
-                throw new NotImplementedException();
+                var result = new IdentityResult();
+                if (!await _userManager.IsInRoleAsync(user, Constants.Roles.Admin))
+                {
+                    result = await _userManager.RemoveFromRoleAsync(user, Constants.Roles.Admin);
+                }
+
+                return result.Succeeded;
             }
 
-            // Todo: Add to voice role
-            public void AddVoice(AppUser user)
+            /// <summary>
+            /// Adds user to voice role.
+            /// </summary>
+            /// <param name="user"></param>
+            /// <returns></returns>
+            public async Task<bool> AddVoice(AppUser user)
             {
-                throw new NotImplementedException();
+                var role = await CreateRoleIfNotExists(Constants.Roles.Voice);
+                var result = new IdentityResult();
+
+                if (!await _userManager.IsInRoleAsync(user, role.Name))
+                {
+                    result = await _userManager.AddToRoleAsync(user, role.Name);
+                }
+                return result.Succeeded;
             }
 
-            // Todo: Remove from voice role
-            public void RemoveVoice(AppUser user)
+            /// <summary>
+            /// Removes user from voice role.
+            /// </summary>
+            /// <param name="user"></param>
+            /// <returns></returns>
+            public async Task<bool> RemoveVoice(AppUser user)
             {
-                throw new NotImplementedException();
+                var result = new IdentityResult();
+                if (!await _userManager.IsInRoleAsync(user, Constants.Roles.Voice))
+                {
+                    result = await _userManager.RemoveFromRoleAsync(user, Constants.Roles.Voice);
+                }
+
+                return result.Succeeded;
             }
 
             // Todo: View all users in admin role
-            public void ViewAdmins()
+            //[Authorize(Policy = "SuperAdmin")]
+            public async Task<ICollection<AppUser>> ViewAdmins()
             {
-                throw new NotImplementedException();
+                var role = await _roleManager.FindByNameAsync(Constants.Roles.Admin);
+
+                return role.Users;
             }
 
             // Todo: View all user in voice role
-            public void ViewVoices()
+            public async Task<ICollection<AppUser>> ViewVoices()
             {
-                throw new NotImplementedException();
+                var role = await _roleManager.FindByNameAsync(Constants.Roles.Voice);
+
+                return role.Users;
             }
 
             /// <summary>
@@ -89,7 +131,46 @@ namespace WebApiBrowler.Services
                 if (role != null) return role;
 
                 role = new AppRole(roleName);
+
+                switch (roleName)
+                {
+                    case Constants.Roles.Admin:
+                        role.Description = "Perform admin operations.";
+                        break;
+                    case Constants.Roles.Voice:
+                        role.Description = "Perform create, update and normal operations.";
+                        break;
+                    case Constants.Roles.User:
+                        role.Description = "Perform normal operations.";
+                        break;
+                    default:
+                        break;
+                }
+
                 await _roleManager.CreateAsync(role);
+
+                // Adds permissions to roles
+                switch (roleName)
+                {
+                    case Constants.Roles.Admin:
+                        await _roleManager.AddClaimAsync(role,
+                            new Claim(Constants.CustomClaimTypes.Permission, Constants.Permission.Delete));
+                        goto case Constants.Roles.Voice;
+
+                    case Constants.Roles.Voice:
+                        await _roleManager.AddClaimAsync(role,
+                            new Claim(Constants.CustomClaimTypes.Permission, Constants.Permission.Update));
+                        await _roleManager.AddClaimAsync(role,
+                            new Claim(Constants.CustomClaimTypes.Permission, Constants.Permission.Create));
+                        goto case Constants.Roles.User;
+
+                    case Constants.Roles.User:
+                        await _roleManager.AddClaimAsync(role,
+                            new Claim(Constants.CustomClaimTypes.Permission, Constants.Permission.View));
+                        break;
+                    default:
+                        break;
+                }
 
                 return role;
             }

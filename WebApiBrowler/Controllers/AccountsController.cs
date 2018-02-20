@@ -80,15 +80,104 @@ namespace WebApiBrowler.Controllers
             return new OkObjectResult("Account created");
         }
 
+        /// <summary>
+        /// View all admin users.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("[controller]/ViewAdmins")]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(bool))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> ViewAdmins()
+        {
+            var result = await _admin.ViewAdmins();
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Adds user to admin role.
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("[controller]/Admin")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(string))]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(bool))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> AddAdmin(string userName)
         {
             var user = await _userManager.FindByNameAsync(userName);
 
             var result = await _admin.AddAdmin(user);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Removes user from admin role.
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("[controller]/Admin")]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(bool))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> RemoveAdmin(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+
+            var result = await _admin.RemoveAdmin(user);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// View all voice users.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("[controller]/ViewVoices")]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(bool))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> ViewVoices()
+        {
+            var result = await _admin.ViewVoices();
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Adds user to voice role.
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("[controller]/Voice")]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(bool))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> AddVoice(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+
+            var result = await _admin.AddVoice(user);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Removes user from voice role.
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("[controller]/Voice")]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(bool))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> RemoveVoice(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+
+            var result = await _admin.RemoveVoice(user);
 
             return Ok(result);
         }
