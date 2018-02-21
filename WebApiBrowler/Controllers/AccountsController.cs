@@ -86,27 +86,40 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("[controller]/ViewAdmins")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(bool))]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<Responses.UserInfoDto>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> ViewAdmins()
         {
-            var result = await _admin.ViewAdmins();
+            var users = await _admin.ViewAdmins();
 
-            return Ok(result);
+            var userDtos = _mapper.Map<List<Responses.UserInfoDto>>(users);
+
+            foreach (var userDto in userDtos)
+            {
+                var user = _userManager.Users.FirstOrDefault(x => x.Id == userDto.Id);
+                userDto.Roles = (List<string>)await _userManager.GetRolesAsync(user);
+            }
+
+            return Ok(userDtos);
         }
 
         /// <summary>
         /// Adds user to admin role.
         /// </summary>
-        /// <param name="userName"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("[controller]/Admin")]
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(bool))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> AddAdmin(string userName)
+        public async Task<IActionResult> AddAdmin(Guid id)
         {
-            var user = await _userManager.FindByNameAsync(userName);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userManager.FindByIdAsync(id.ToString());
 
             var result = await _admin.AddAdmin(user);
 
@@ -116,15 +129,20 @@ namespace WebApiBrowler.Controllers
         /// <summary>
         /// Removes user from admin role.
         /// </summary>
-        /// <param name="userName"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete]
         [Route("[controller]/Admin")]
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(bool))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> RemoveAdmin(string userName)
+        public async Task<IActionResult> RemoveAdmin(Guid id)
         {
-            var user = await _userManager.FindByNameAsync(userName);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userManager.FindByIdAsync(id.ToString());
 
             var result = await _admin.RemoveAdmin(user);
 
@@ -137,27 +155,40 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("[controller]/ViewVoices")]
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(bool))]
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<Responses.UserInfoDto>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> ViewVoices()
         {
-            var result = await _admin.ViewVoices();
+            var users = await _admin.ViewVoices();
 
-            return Ok(result);
+            var userDtos = _mapper.Map<List<Responses.UserInfoDto>>(users);
+
+            foreach (var userDto in userDtos)
+            {
+                var user = _userManager.Users.FirstOrDefault(x => x.Id == userDto.Id);
+                userDto.Roles = (List<string>)await _userManager.GetRolesAsync(user);
+            }
+
+            return Ok(userDtos);
         }
 
         /// <summary>
         /// Adds user to voice role.
         /// </summary>
-        /// <param name="userName"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("[controller]/Voice")]
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(bool))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> AddVoice(string userName)
+        public async Task<IActionResult> AddVoice(Guid id)
         {
-            var user = await _userManager.FindByNameAsync(userName);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userManager.FindByIdAsync(id.ToString());
 
             var result = await _admin.AddVoice(user);
 
@@ -167,15 +198,20 @@ namespace WebApiBrowler.Controllers
         /// <summary>
         /// Removes user from voice role.
         /// </summary>
-        /// <param name="userName"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete]
         [Route("[controller]/Voice")]
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(bool))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> RemoveVoice(string userName)
+        public async Task<IActionResult> RemoveVoice(Guid id)
         {
-            var user = await _userManager.FindByNameAsync(userName);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userManager.FindByIdAsync(id.ToString());
 
             var result = await _admin.RemoveVoice(user);
 
@@ -190,11 +226,18 @@ namespace WebApiBrowler.Controllers
         [Route("[controller]/")]
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<Responses.UserInfoDto>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-        public IActionResult GetAllUsers()
+        public async Task<IActionResult> GetAllUsers()
         {
-            var users = _userManager.GetUsersInRoleAsync("admin");
+            var users = _userManager.Users;
+            var userDtos = _mapper.Map<List<Responses.UserInfoDto>>(users);
 
-            return Ok(_userManager.Users);
+            foreach (var userDto in userDtos)
+            {
+                var user = _userManager.Users.FirstOrDefault(x => x.Id == userDto.Id);
+                userDto.Roles = (List<string>) await _userManager.GetRolesAsync(user);
+            }
+
+            return Ok(userDtos);
         }
 
         /// <summary>

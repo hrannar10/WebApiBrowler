@@ -18,6 +18,9 @@ namespace WebApiBrowler.Helpers
 
             CreateMap<AssetType, Responses.AssetTypeDto>();
             CreateMap<Requests.AssetTypeDto, AssetType>();
+
+            CreateMap<AppUser, Responses.UserInfoDto>();
+            CreateMap<Responses.UserInfoDto, AppUser>();
         }
     }
 }
