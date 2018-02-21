@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -61,7 +62,7 @@ namespace WebApiBrowler.Services
             public async Task<bool> RemoveAdmin(AppUser user)
             {
                 var result = new IdentityResult();
-                if (!await _userManager.IsInRoleAsync(user, Constants.Roles.Admin))
+                if (await _userManager.IsInRoleAsync(user, Constants.Roles.Admin))
                 {
                     result = await _userManager.RemoveFromRoleAsync(user, Constants.Roles.Admin);
                 }
@@ -94,7 +95,7 @@ namespace WebApiBrowler.Services
             public async Task<bool> RemoveVoice(AppUser user)
             {
                 var result = new IdentityResult();
-                if (!await _userManager.IsInRoleAsync(user, Constants.Roles.Voice))
+                if (await _userManager.IsInRoleAsync(user, Constants.Roles.Voice))
                 {
                     result = await _userManager.RemoveFromRoleAsync(user, Constants.Roles.Voice);
                 }
@@ -106,17 +107,13 @@ namespace WebApiBrowler.Services
             //[Authorize(Policy = "SuperAdmin")]
             public async Task<ICollection<AppUser>> ViewAdmins()
             {
-                var role = await _roleManager.FindByNameAsync(Constants.Roles.Admin);
-
-                return role.Users;
+                return await _userManager.GetUsersInRoleAsync(Constants.Roles.Admin);
             }
 
             // Todo: View all user in voice role
             public async Task<ICollection<AppUser>> ViewVoices()
             {
-                var role = await _roleManager.FindByNameAsync(Constants.Roles.Voice);
-
-                return role.Users;
+                return await _userManager.GetUsersInRoleAsync(Constants.Roles.Voice);
             }
 
             /// <summary>
