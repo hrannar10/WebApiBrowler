@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -58,7 +56,7 @@ namespace WebApiBrowler.Services
             /// </summary>
             /// <param name="user"></param>
             /// <returns></returns>
-            //[Authorize(Policy = "SuperAdmin")]
+            [Authorize(Policy = Constants.Permission.SupremeLeader)]
             public async Task<bool> RemoveAdmin(AppUser user)
             {
                 var result = new IdentityResult();
@@ -104,7 +102,7 @@ namespace WebApiBrowler.Services
             }
 
             // Todo: View all users in admin role
-            //[Authorize(Policy = "SuperAdmin")]
+            [Authorize(Policy = Constants.Permission.SupremeLeader)]
             public async Task<ICollection<AppUser>> ViewAdmins()
             {
                 return await _userManager.GetUsersInRoleAsync(Constants.Roles.Admin);
@@ -124,6 +122,11 @@ namespace WebApiBrowler.Services
             /// <returns></returns>
             private async Task<AppRole> CreateRoleIfNotExists(string roleName)
             {
+                if (roleName == Constants.Roles.SuperAdmin)
+                {
+                    throw new AppException("There can only be one supreme leader.");
+                }
+
                 var role = await _roleManager.FindByNameAsync(roleName);
                 if (role != null) return role;
 

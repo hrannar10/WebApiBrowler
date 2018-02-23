@@ -5,6 +5,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -133,6 +134,7 @@ namespace WebApiBrowler.Controllers
         /// <returns></returns>
         [HttpDelete]
         [Route("[controller]/Admin")]
+        [Authorize(Policy = "SuperUser")]
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(bool))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> RemoveAdmin(Guid id)
@@ -222,6 +224,7 @@ namespace WebApiBrowler.Controllers
         /// Get all users.
         /// </summary>
         /// <returns></returns>
+        [Authorize(Policy = "SuperUser")]
         [HttpGet]
         [Route("[controller]/")]
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(List<Responses.UserInfoDto>))]
@@ -235,6 +238,13 @@ namespace WebApiBrowler.Controllers
             {
                 var user = _userManager.Users.FirstOrDefault(x => x.Id == userDto.Id);
                 userDto.Roles = (List<string>) await _userManager.GetRolesAsync(user);
+
+                var userss = await _userManager.GetUsersInRoleAsync(Constants.Roles.SuperAdmin);
+
+                var role = await _roleManager.FindByNameAsync(userDto.Roles[0]);
+                var claims = await _roleManager.GetClaimsAsync(role);
+
+                userDto.Claims = claims.ToArray();
             }
 
             return Ok(userDtos);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using AutoMapper;
 using FluentValidation.AspNetCore;
@@ -120,6 +121,9 @@ namespace WebApiBrowler
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("ApiUser", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
+                options.AddPolicy("Test2", policy => policy.RequireClaim(ClaimTypes.Name, "minuZ"));
+                options.AddPolicy("SuperUser", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, "SuperUser"));
+                options.AddPolicy("Test", policy => policy.AddRequirements(new Requirements.SuperAdminRequirement("minuZ")));
             });
 
             // add identity

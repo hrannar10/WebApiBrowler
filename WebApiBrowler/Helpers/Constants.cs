@@ -19,6 +19,7 @@ namespace WebApiBrowler.Helpers
 
         public static class Roles
         {
+            public const string SuperAdmin = "SuperUser"; // @@
             public const string Admin = "Admin"; // @
             public const string Voice = "Voice"; // +
             public const string User = "User"; // regular Joe
@@ -27,6 +28,7 @@ namespace WebApiBrowler.Helpers
 
         public static class Permission
         {
+            public const string SupremeLeader = "SupremeLeader"; // Snoke
             public const string View = "View";
             public const string Create = "Create";
             public const string Update = "Update";
